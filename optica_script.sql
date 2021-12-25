@@ -62,13 +62,12 @@ ENGINE = InnoDB;
 -- Table `optica`.`clients`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `optica`.`clients` (
-  `id_clients` INT NOT NULL,
+  `id_clients` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(45) NULL,
   `adreça` VARCHAR(45) NULL,
   `telefon` VARCHAR(45) NULL,
   `email` VARCHAR(45) NULL,
   `data_registre` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
-  `data_venda` VARCHAR(45) NULL,
   `recomanador_client_id` INT NULL,
   PRIMARY KEY (`id_clients`),
   INDEX `fk_clients_clients1_idx` (`recomanador_client_id` ASC) VISIBLE,
@@ -77,27 +76,6 @@ CREATE TABLE IF NOT EXISTS `optica`.`clients` (
     REFERENCES `optica`.`clients` (`id_clients`)
     ON DELETE NO ACTION
     ON UPDATE SET NULL)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `optica`.`ulleres_clients`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `optica`.`ulleres_clients` (
-  `id_ulleres` INT NULL,
-  `id_clients` INT NOT NULL,
-  PRIMARY KEY (`id_ulleres`, `id_clients`),
-  INDEX `fk_table1_clients1_idx` (`id_clients` ASC) VISIBLE,
-  CONSTRAINT `fk_table1_ulleres1`
-    FOREIGN KEY (`id_ulleres` , `id_clients`)
-    REFERENCES `optica`.`ulleres` (`id_ulleres` , `id_ulleres`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_table1_clients1`
-    FOREIGN KEY (`id_clients`)
-    REFERENCES `optica`.`clients` (`id_clients`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -112,21 +90,29 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `optica`.`empleats_clients`
+-- Table `optica`.`ulleres_clients`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `optica`.`empleats_clients` (
-  `id_empleat` INT NULL,
-  `id_clients` INT NOT NULL,
-  PRIMARY KEY (`id_empleat`, `id_clients`),
-  INDEX `fk_empleats_clients_clients1_idx` (`id_clients` ASC) VISIBLE,
-  CONSTRAINT `fk_empleats_clients_empleats1`
-    FOREIGN KEY (`id_empleat`)
-    REFERENCES `optica`.`empleats` (`id_empleat`)
+CREATE TABLE IF NOT EXISTS `optica`.`ulleres_clients` (
+  `ulleres_id` INT NOT NULL,
+  `clients_id` INT NOT NULL,
+  `empleats_id` INT NOT NULL,
+  `data_venda` DATETIME NULL,
+  PRIMARY KEY (`ulleres_id`, `clients_id`, `empleats_id`),
+  INDEX `fk_ulleres_clients_clients1_idx` (`clients_id` ASC) VISIBLE,
+  INDEX `fk_ulleres_clients_empleats1_idx` (`empleats_id` ASC) VISIBLE,
+  CONSTRAINT `fk_ulleres_clients_ulleres1`
+    FOREIGN KEY (`ulleres_id`)
+    REFERENCES `optica`.`ulleres` (`id_ulleres`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_empleats_clients_clients1`
-    FOREIGN KEY (`id_clients`)
+  CONSTRAINT `fk_ulleres_clients_clients1`
+    FOREIGN KEY (`clients_id`)
     REFERENCES `optica`.`clients` (`id_clients`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ulleres_clients_empleats1`
+    FOREIGN KEY (`empleats_id`)
+    REFERENCES `optica`.`empleats` (`id_empleat`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
