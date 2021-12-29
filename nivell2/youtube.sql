@@ -32,16 +32,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `youtube`.`video_visibility`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `youtube`.`video_visibility` (
-  `id_video_visibility` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NULL,
-  PRIMARY KEY (`id_video_visibility`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `youtube`.`video`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `youtube`.`video` (
@@ -49,26 +39,17 @@ CREATE TABLE IF NOT EXISTS `youtube`.`video` (
   `title` VARCHAR(45) NULL,
   `description` MEDIUMTEXT NULL,
   `size` INT NULL,
-  `file_name` VARCHAR(45) NULL,
+  `filename` VARCHAR(45) NULL,
   `duration` INT NULL,
   `thumbnail` VARCHAR(45) NULL,
   `plays` INT NULL,
-  `likes` INT NULL,
-  `dislikes` INT NULL,
-  `user_id` INT NOT NULL,
   `date_creation` DATETIME NULL,
-  `video_visibility_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
   PRIMARY KEY (`id_video`),
-  INDEX `fk_video_usuari_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_video_video_visibility1_idx` (`video_visibility_id` ASC) VISIBLE,
-  CONSTRAINT `fk_video_usuari`
+  INDEX `fk_video_user_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_video_user`
     FOREIGN KEY (`user_id`)
     REFERENCES `youtube`.`user` (`id_user`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_video_video_visibility1`
-    FOREIGN KEY (`video_visibility_id`)
-    REFERENCES `youtube`.`video_visibility` (`id_video_visibility`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -92,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `youtube`.`video_has_tag` (
   `tag_id` INT NOT NULL,
   INDEX `fk_video_has_tag_video1_idx` (`video_id` ASC) VISIBLE,
   INDEX `fk_video_has_tag_tag1_idx` (`tag_id` ASC) VISIBLE,
+  PRIMARY KEY (`video_id`, `tag_id`),
   CONSTRAINT `fk_video_has_tag_video1`
     FOREIGN KEY (`video_id`)
     REFERENCES `youtube`.`video` (`id_video`)
@@ -112,85 +94,15 @@ CREATE TABLE IF NOT EXISTS `youtube`.`channel` (
   `id_channel` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   `description` MEDIUMTEXT NULL,
-  `date_creation` DATETIME NULL,
+  `timestamp` DATETIME NULL,
   `user_id` INT NOT NULL,
   PRIMARY KEY (`id_channel`),
-  INDEX `fk_channel_usuari1_idx` (`user_id` ASC) VISIBLE,
-  CONSTRAINT `fk_channel_usuari1`
+  INDEX `fk_channel_user1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_channel_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `youtube`.`user` (`id_user`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `youtube`.`user_subscribe_channel`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `youtube`.`user_subscribe_channel` (
-  `user_id` INT NOT NULL,
-  `channel_id` INT NOT NULL,
-  INDEX `fk_user_subscribe channel_user1_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_user_subscribe channel_channel1_idx` (`channel_id` ASC) VISIBLE,
-  CONSTRAINT `fk_user_subscribe channel_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `youtube`.`user` (`id_user`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_subscribe channel_channel1`
-    FOREIGN KEY (`channel_id`)
-    REFERENCES `youtube`.`channel` (`id_channel`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `youtube`.`rate`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `youtube`.`rate` (
-  `id_rates` INT NOT NULL AUTO_INCREMENT,
-  `nom` VARCHAR(45) NULL,
-  PRIMARY KEY (`id_rates`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `youtube`.`user_rate_video`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `youtube`.`user_rate_video` (
-  `user_id` INT NOT NULL,
-  `video_id` INT NOT NULL,
-  `rate_id` INT NOT NULL,
-  `date` DATETIME NULL,
-  INDEX `fk_user_rate_video_user1_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_user_rate_video_video1_idx` (`video_id` ASC) VISIBLE,
-  INDEX `fk_user_rate_video_rates1_idx` (`rate_id` ASC) VISIBLE,
-  CONSTRAINT `fk_user_rate_video_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `youtube`.`user` (`id_user`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_rate_video_video1`
-    FOREIGN KEY (`video_id`)
-    REFERENCES `youtube`.`video` (`id_video`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_rate_video_rates1`
-    FOREIGN KEY (`rate_id`)
-    REFERENCES `youtube`.`rate` (`id_rates`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `youtube`.`playlist_access`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `youtube`.`playlist_access` (
-  `id_playlist` INT NOT NULL,
-  `nom` VARCHAR(45) NULL,
-  PRIMARY KEY (`id_playlist`))
 ENGINE = InnoDB;
 
 
@@ -201,16 +113,10 @@ CREATE TABLE IF NOT EXISTS `youtube`.`playlist` (
   `id_playlist` INT NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(45) NULL,
   `date_creation` DATETIME NULL,
-  `playlist_access_id` INT NOT NULL,
+  `status` VARCHAR(45) NULL,
   `user_id` INT NOT NULL,
   PRIMARY KEY (`id_playlist`),
-  INDEX `fk_playlist_playlist_access1_idx` (`playlist_access_id` ASC) VISIBLE,
   INDEX `fk_playlist_user1_idx` (`user_id` ASC) VISIBLE,
-  CONSTRAINT `fk_playlist_playlist_access1`
-    FOREIGN KEY (`playlist_access_id`)
-    REFERENCES `youtube`.`playlist_access` (`id_playlist`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_playlist_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `youtube`.`user` (`id_user`)
@@ -225,20 +131,81 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `youtube`.`comment` (
   `id_comment` INT NOT NULL AUTO_INCREMENT,
   `comment` MEDIUMTEXT NULL,
+  `timestamp` DATETIME NULL,
   `user_id` INT NOT NULL,
-  `video_id` INT NOT NULL,
-  `date_creation` DATETIME NULL,
   PRIMARY KEY (`id_comment`),
   INDEX `fk_comment_user1_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_comment_video1_idx` (`video_id` ASC) VISIBLE,
   CONSTRAINT `fk_comment_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `youtube`.`user` (`id_user`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_comment_video1`
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `youtube`.`user_rate_video`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `youtube`.`user_rate_video` (
+  `video_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `rate` VARCHAR(45) NULL,
+  `timestamp` DATETIME NULL,
+  INDEX `fk_user_like_video_video1_idx` (`video_id` ASC) VISIBLE,
+  INDEX `fk_user_like_video_user1_idx` (`user_id` ASC) VISIBLE,
+  PRIMARY KEY (`video_id`, `user_id`),
+  CONSTRAINT `fk_user_like_video_video1`
     FOREIGN KEY (`video_id`)
     REFERENCES `youtube`.`video` (`id_video`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_like_video_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `youtube`.`user` (`id_user`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `youtube`.`playlist_has_video`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `youtube`.`playlist_has_video` (
+  `playlist_id` INT NOT NULL,
+  `video_id` INT NOT NULL,
+  INDEX `fk_playlist_has_video_playlist1_idx` (`playlist_id` ASC) VISIBLE,
+  INDEX `fk_playlist_has_video_video1_idx` (`video_id` ASC) VISIBLE,
+  PRIMARY KEY (`playlist_id`, `video_id`),
+  CONSTRAINT `fk_playlist_has_video_playlist1`
+    FOREIGN KEY (`playlist_id`)
+    REFERENCES `youtube`.`playlist` (`id_playlist`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_playlist_has_video_video1`
+    FOREIGN KEY (`video_id`)
+    REFERENCES `youtube`.`video` (`id_video`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `youtube`.`user_subscribes_channel`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `youtube`.`user_subscribes_channel` (
+  `user_id` INT NOT NULL,
+  `channel_id` INT NOT NULL,
+  INDEX `fk_user_subscribes_channel_user1_idx` (`user_id` ASC) VISIBLE,
+  INDEX `fk_user_subscribes_channel_channel1_idx` (`channel_id` ASC) VISIBLE,
+  PRIMARY KEY (`user_id`, `channel_id`),
+  CONSTRAINT `fk_user_subscribes_channel_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `youtube`.`user` (`id_user`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user_subscribes_channel_channel1`
+    FOREIGN KEY (`channel_id`)
+    REFERENCES `youtube`.`channel` (`id_channel`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -248,26 +215,19 @@ ENGINE = InnoDB;
 -- Table `youtube`.`user_rate_comment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `youtube`.`user_rate_comment` (
-  `user_id` INT NOT NULL,
   `comment_id` INT NOT NULL,
-  `rate_id` INT NOT NULL,
-  `date_creation` DATETIME NULL,
+  `user_id` INT NOT NULL,
+  `rate` VARCHAR(45) NULL,
+  PRIMARY KEY (`comment_id`, `user_id`),
   INDEX `fk_user_rate_comment_user1_idx` (`user_id` ASC) VISIBLE,
-  INDEX `fk_user_rate_comment_comment1_idx` (`comment_id` ASC) VISIBLE,
-  INDEX `fk_user_rate_comment_rate1_idx` (`rate_id` ASC) VISIBLE,
-  CONSTRAINT `fk_user_rate_comment_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `youtube`.`user` (`id_user`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_user_rate_comment_comment1`
     FOREIGN KEY (`comment_id`)
     REFERENCES `youtube`.`comment` (`id_comment`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_user_rate_comment_rate1`
-    FOREIGN KEY (`rate_id`)
-    REFERENCES `youtube`.`rate` (`id_rates`)
+  CONSTRAINT `fk_user_rate_comment_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `youtube`.`user` (`id_user`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
