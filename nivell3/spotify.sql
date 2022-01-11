@@ -28,10 +28,6 @@ CREATE TABLE IF NOT EXISTS `spotify`.`user` (
   `postal_code` VARCHAR(45) NULL,
   `date_subscribtion` DATETIME NULL,
   `date_renovation` DATETIME NULL,
-  `credit_card_num` INT NULL,
-  `credit_card_cvv` INT NULL,
-  `credit_card_caducity` VARCHAR(45) NULL,
-  `paypal_user` VARCHAR(45) NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -42,10 +38,14 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `spotify`.`payment` (
   `id_payment` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
   `date` DATETIME NULL,
   `order` VARCHAR(45) NULL,
   `total` INT NULL,
-  `user_id` INT NOT NULL,
+  `credit_card_num` INT NULL,
+  `credit_card_cvv` INT NULL,
+  `credit_card_caducity` VARCHAR(45) NULL,
+  `paypal_user` VARCHAR(45) NULL,
   PRIMARY KEY (`id_payment`),
   UNIQUE INDEX `order_UNIQUE` (`order` ASC) VISIBLE,
   INDEX `fk_payment_user_idx` (`user_id` ASC) VISIBLE,
