@@ -1,3 +1,4 @@
+
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -45,6 +46,9 @@ CREATE TABLE IF NOT EXISTS `youtube`.`video` (
   `plays` INT NULL,
   `date_creation` DATETIME NULL,
   `user_id` INT NOT NULL,
+  `likes` INT NULL,
+  `dislikes` INT NULL,
+  `estat` ENUM('public', 'ocult', 'privat') NULL,
   PRIMARY KEY (`id_video`),
   INDEX `fk_video_user_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `fk_video_user`
@@ -133,11 +137,18 @@ CREATE TABLE IF NOT EXISTS `youtube`.`comment` (
   `comment` MEDIUMTEXT NULL,
   `timestamp` DATETIME NULL,
   `user_id` INT NOT NULL,
-  PRIMARY KEY (`id_comment`),
+  `video_id` INT NOT NULL,
+  PRIMARY KEY (`id_comment`, `video_id`),
   INDEX `fk_comment_user1_idx` (`user_id` ASC) VISIBLE,
+  INDEX `fk_comment_video1_idx` (`video_id` ASC) VISIBLE,
   CONSTRAINT `fk_comment_user1`
     FOREIGN KEY (`user_id`)
     REFERENCES `youtube`.`user` (`id_user`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_comment_video1`
+    FOREIGN KEY (`video_id`)
+    REFERENCES `youtube`.`video` (`id_video`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -149,7 +160,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `youtube`.`user_rate_video` (
   `video_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-  `rate` VARCHAR(45) NULL,
+  `rate` ENUM('like', 'dislike') NOT NULL,
   `timestamp` DATETIME NULL,
   INDEX `fk_user_like_video_video1_idx` (`video_id` ASC) VISIBLE,
   INDEX `fk_user_like_video_user1_idx` (`user_id` ASC) VISIBLE,
