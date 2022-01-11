@@ -1,17 +1,17 @@
-SELECT COUNT(clients_id) AS Compres
-FROM ulleres_clients
-JOIN clients ON clients.id_clients = ulleres_clients.clients_id
-WHERE clients.nom='ana';
+SELECT COUNT(client_id) AS Compres
+FROM venda
+JOIN client ON client.id_client = venda.client_id
+WHERE client.nom='ana';
 
-SELECT ulleres_clients.ulleres_id, ulleres.nom
-FROM ulleres_clients
-JOIN empleats ON empleats.id_empleat = ulleres_clients.empleats_id
-JOIN ulleres ON ulleres.id_ulleres = ulleres_clients.ulleres_id
-WHERE empleats.nom = 'Joan' AND  ulleres_clients.data_venda LIKE '%2021%';
+SELECT venda.ullera_id, ullera.nom
+FROM venda
+JOIN empleat ON empleat.id_empleat = venda.empleat_id
+JOIN ullera ON ullera.id_ullera = venda.ullera_id
+WHERE empleat.nom = 'Joan' AND  venda.data_venda LIKE '%2021%';
 
-SELECT DISTINCT proveidors.nom
-FROM proveidors
-JOIN ulleres ON ulleres.id_proveidors = proveidors.id_proveidors
-JOIN ulleres_clients ON ulleres_clients.ulleres_id = ulleres.id_ulleres
+SELECT DISTINCT proveidor.nom
+FROM proveidor
+JOIN ullera ON ullera.proveidor_id = proveidor.id_proveidor
+JOIN venda ON venda.ullera_id = ullera.id_ullera
  
 ;
