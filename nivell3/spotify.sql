@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `spotify`.`song` (
   `title` VARCHAR(45) NULL,
   `duration` INT NULL,
   `total_plays` INT NULL,
-  `album_id` INT NULL,
+  `album_id` INT NOT NULL,
   PRIMARY KEY (`id_song`),
   INDEX `fk_song_album1_idx` (`album_id` ASC) VISIBLE,
   CONSTRAINT `fk_song_album1`
